@@ -1,0 +1,40 @@
+name: ci
+
+# Least privilege by default. This workflow only reads the repo.
+permissions:
+  contents: read
+
+# NOTE: intentionally uses `pull_request`, never `pull_request_target`
+# (which would run with write access to secrets against untrusted forks).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan working tree for private-key-shaped strings
+        run: bash scripts/scan-secrets.sh
+
+  lint-scripts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax-check payment scripts (no execution, no network)
+        run: |
+          for f in payments/**/*.mjs; do
+            echo "check $f"
+            node --check "$f"
+          done
+        shell: bash

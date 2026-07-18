@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aitch — Project Hub</title>
+  <meta name="description" content="The Aitch project: team, technical solution, architecture, and the Stage 1 → Stage 2 → pilot roadmap. Built on OpenClaw, ERC-8004, and x402 on GOAT Network." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Crect width='16' height='32' rx='7' fill='%23e01e37'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="brand" href="/"><span class="dot"></span> Aitch</a>
+      <div class="nav-links">
+        <a href="#solution">Solution</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#getting-started">Getting started</a>
+        <a class="btn btn-blue" href="https://t.me/harshils_hackathon_claw_bot">Telegram bot</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="wrap">
+      <span class="eyebrow">Project hub · for builders, testers &amp; judges</span>
+      <h1>Aitch — an autonomous, <span class="red">paid</span> tutoring agent.</h1>
+      <p class="lede">
+        A pay-per-session AI tutoring agent that owns its on-chain identity and wallet,
+        takes payment with zero human oversight below its spend cap, and returns an
+        automated study pack. Built on OpenClaw · ERC-8004 · x402 · GOAT Network mainnet.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-blue" href="https://github.com/Harshil-212369/pay-per-session-tutoring-agent">View the repository →</a>
+        <a class="btn btn-ghost" href="https://8004scan.io/agents/goat/77">Verify Agent #77</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SOLUTION -->
+  <section id="solution">
+    <div class="wrap">
+      <div class="section-tag">The solution</div>
+      <h2>A deterministic money engine, wrapped in a conversational agent.</h2>
+      <div class="grid g2" style="margin-top:22px;">
+        <div class="card">
+          <div class="k">the agent</div>
+          <h3>Conversation &amp; gating</h3>
+          <p>An OpenClaw skill (<span class="mono">SKILL.md</span>) runs the session: self-disclosure, payment gating, guardrails, and study-pack delivery. It orchestrates — it never holds a private key.</p>
+        </div>
+        <div class="card">
+          <div class="k">the engine</div>
+          <h3>Deterministic settlement</h3>
+          <p>All money movement lives in a Node engine the agent shells out to. On-chain guards, typed error codes, dry-run by default. Auditable, testable, out of LLM improvisation.</p>
+        </div>
+        <div class="card">
+          <div class="k">the identity</div>
+          <h3>ERC-8004 Agent #77</h3>
+          <p>A portable on-chain identity carrying the agent's wallet and reputation, discoverable across ecosystems. Verifiable at 8004scan.io/agents/goat/77.</p>
+        </div>
+        <div class="card">
+          <div class="k">the deliverable</div>
+          <h3>Automated study pack</h3>
+          <p>The CPOL507 GitHub Actions pipeline turns lecture audio + slides into a searchable, structured master PDF — the thing the student actually pays for.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="wrap">
+      <div class="section-tag">Architecture</div>
+      <h2>The order flow.</h2>
+      <p style="max-width:62ch;">Payments use <span class="mono">goatx402-sdk-server</span> — an order-based API client
+        (<span class="mono blue">GoatX402Client</span> with <span class="mono blue">baseUrl</span>). The SDK issues orders
+        and watches the chain; the on-chain ERC-20 transfer moves the money.</p>
+      <div class="code" style="margin-top:18px;">
+<span class="c"># the load-bearing loop (payments/session/pay-session.mjs)</span>
+<span class="b">createOrder</span>({ dappOrderId, chainId: <span class="r">2345</span>, tokenSymbol: <span class="r">"USDC"</span>, fromAddress, amountWei })
+   <span class="c">→ guard: flow == "ERC20_DIRECT"  &amp;&amp;  payToAddress == AGENT_ADDRESS</span>
+usdc.<span class="b">transfer</span>(order.payToAddress, order.amountWei)   <span class="c">// ethers v6, payer key from env</span>
+client.<span class="b">waitForConfirmation</span>(order.orderId)          <span class="c">// poll + status pings (settlement is slow)</span>
+client.<span class="b">getOrderProof</span>(order.orderId)                <span class="c">// signed proof: from, to, tx_hash, flow</span>
+      </div>
+      <div class="grid g3" style="margin-top:20px;">
+        <div class="card"><div class="k">two-wallet model</div><p>Payer (student) ≠ merchant (Aitch), enforced in code. A self-transfer risks the indexer not confirming cleanly.</p></div>
+        <div class="card"><div class="k">two-tier guardrail</div><p>Autonomous below the 0.1 USDC.e cap; explicit typed <span class="mono">CONFIRM PAYMENT</span> above it — plus a separate engine flag. Defense in depth.</p></div>
+        <div class="card"><div class="k">latency handling</div><p>On timeout the engine surfaces order status and <span class="red">never sends a second transfer</span>. Latency is an expected branch, not a failure.</p></div>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        <h3 style="margin-bottom:8px;">Live settlement — Stage 1</h3>
+        <p style="margin:0;">A real payment has executed on GOAT mainnet: <span class="mono">1 USDC.e</span>, <span class="mono">ERC20_DIRECT</span>, block <span class="mono">13802564</span>,
+          payer <span class="mono">0xBB08…7087</span> → merchant <span class="mono">0x09eE…c6bF</span>. The indexer reconciliation lagged past the poll
+          window; the on-chain transfer is irreversible and confirmed. Documented honestly as a known latency characteristic — the engine's timeout branch handles exactly this.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="wrap">
+      <div class="section-tag">Roadmap</div>
+      <h2>Stage 1 → Stage 2 → pilot.</h2>
+      <div class="road" style="margin-top:22px;">
+        <div class="stage s1">
+          <span class="lab">Stage 1 · now</span>
+          <h3>Foundation live</h3>
+          <ul>
+            <li>ERC-8004 identity registered (Agent #77)</li>
+            <li>x402 settlement executed on mainnet</li>
+            <li>Payment engine + guardrails tested</li>
+            <li>Study-pack pipeline running (CPOL507)</li>
+            <li>Seed-user definition &amp; growth metrics defined</li>
+          </ul>
+        </div>
+        <div class="stage s2">
+          <span class="lab">Stage 2 · next</span>
+          <h3>Wire &amp; validate</h3>
+          <ul>
+            <li>Finish Telegram session state machine</li>
+            <li>Onboard 10–20 seed users</li>
+            <li>Track paid sessions / week (north star)</li>
+            <li>Drive down settlement latency (UX)</li>
+            <li>Rewrite Agent Card for discovery (GEO)</li>
+          </ul>
+        </div>
+        <div class="stage s3">
+          <span class="lab">Pilot · after</span>
+          <h3>Repeatable habit</h3>
+          <ul>
+            <li>Prove 7-day return rate on the wedge</li>
+            <li>Expand beyond the origin cohort by course shape</li>
+            <li>Multiple session tiers by pack depth</li>
+            <li>On-chain reputation accrual on Agent #77</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:16px;">Seed-user definition and the full growth-metrics proposal live in
+        <a href="https://github.com/Harshil-212369/pay-per-session-tutoring-agent">the repository</a> under <span class="mono">docs/SEED_USERS.md</span> and <span class="mono">docs/GROWTH_METRICS.md</span>.</p>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="wrap">
+      <div class="section-tag">Team</div>
+      <h2>Built by a student who lived the problem.</h2>
+      <div class="grid g2" style="margin-top:22px;align-items:start;">
+        <div class="card">
+          <h3>Harshil — builder</h3>
+          <p style="margin-bottom:10px;">Toronto Metropolitan University student. Built the underlying study-pack pipeline for their own lecture-heavy course (CPOL507) before turning it into an agent. The product insight comes from the specific moment existing tools failed — not a market report.</p>
+          <p class="muted">The "unfair insight": the builder <em>is</em> the seed user.</p>
+        </div>
+        <div class="card">
+          <h3>Program</h3>
+          <p style="margin-bottom:10px;">OpenClaw Summer Builder Bootcamp 2026 — 8 weeks, 12 selected teams building and validating autonomous agents that hold identity and transact on-chain.</p>
+          <ul class="plain">
+            <li><span class="tick">→</span> Settlement infrastructure: GOAT Network (Bitcoin L2)</li>
+            <li><span class="tick">→</span> Identity standard: ERC-8004</li>
+            <li><span class="tick">→</span> Payments: x402</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GETTING STARTED -->
+  <section id="getting-started">
+    <div class="wrap">
+      <div class="section-tag">Getting started</div>
+      <h2>Talk to the agent.</h2>
+      <div class="grid g2" style="margin-top:22px;align-items:start;">
+        <div class="card">
+          <h3>As a user</h3>
+          <p style="margin-bottom:10px;">Open the Telegram bot and send <span class="mono blue">/start</span>. Aitch discloses what it does and what a session costs — free. Then <span class="mono blue">/start_session</span> to begin the paid loop and submit your material.</p>
+          <a class="btn btn-blue" href="https://t.me/harshils_hackathon_claw_bot">t.me/harshils_hackathon_claw_bot →</a>
+        </div>
+        <div class="card">
+          <h3>As a developer</h3>
+          <p style="margin-bottom:10px;">Clone the repo, <span class="mono">npm install</span>, copy <span class="mono">.env.example</span> → <span class="mono">.env</span>, and run the read-only preflight before anything moves funds:</p>
+          <div class="code">node payments/diagnostics/<span class="b">balance-check</span>.mjs
+node payments/diagnostics/<span class="b">merchant-check</span>.mjs
+node payments/session/<span class="b">pay-session</span>.mjs      <span class="c"># dry run</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 Aitch · Pay-per-session AI tutoring agent</div>
+      <div style="display:flex;gap:18px;">
+        <a href="/">Landing</a>
+        <a href="https://t.me/harshils_hackathon_claw_bot">Telegram</a>
+        <a href="https://8004scan.io/agents/goat/77">ERC-8004 #77</a>
+        <a href="https://github.com/Harshil-212369/pay-per-session-tutoring-agent">GitHub</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

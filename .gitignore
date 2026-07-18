@@ -1,0 +1,52 @@
+# ── Secrets: never commit ──────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+rclone.conf
+secrets/
+**/secrets/
+agent.env
+vault/
+
+# ── Node ───────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ── Python ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ── Media / large study-pack inputs & outputs ──────────────────────
+*.m4a
+*.mp3
+*.wav
+*.mp4
+*.mov
+*.pptx
+*.zip
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# ── Runtime state (pending orders, spend ledger) ───────────────────
+state/
+**/state/
+
+# ── Internal working notes — not for the public repo ───────────────
+forClaudeCode/
+old/
+
+# ── OS / editor ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Vercel ─────────────────────────────────────────────────────────
+.vercel

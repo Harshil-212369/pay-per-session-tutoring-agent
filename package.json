@@ -1,0 +1,28 @@
+{
+  "name": "aitch",
+  "version": "1.0.0",
+  "description": "Aitch — pay-per-session AI tutoring agent (OpenClaw + ERC-8004 + x402 on GOAT Network mainnet, chain 2345).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "scan": "bash scripts/scan-secrets.sh",
+    "balance": "node payments/diagnostics/balance-check.mjs",
+    "gas": "node payments/diagnostics/gas-check.mjs",
+    "merchant": "node payments/diagnostics/merchant-check.mjs",
+    "pay:dry": "node payments/session/pay-session.mjs",
+    "pay": "node payments/session/pay-session.mjs --confirm"
+  },
+  "keywords": [
+    "openclaw",
+    "erc-8004",
+    "x402",
+    "goat-network",
+    "ai-agent",
+    "tutoring",
+    "usdc"
+  ],
+  "dependencies": {
+    "ethers": "^6.16.0",
+    "goatx402-sdk-server": "^0.1.1"
+  }
+}
