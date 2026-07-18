@@ -28,6 +28,7 @@ venv/
 *.mp4
 *.mov
 *.pptx
+!docs/*.pptx
 *.zip
 *.pdf
 *.png
