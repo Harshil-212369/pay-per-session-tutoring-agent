@@ -1,9 +1,11 @@
   // merchant-check.mjs  —  run: node merchant-check.mjs
   import { GoatX402Client } from 'goatx402-sdk-server';
 
-  // ⚠️ VERIFY this host in the portal's Developer section. The SDK docstring
-  //    example uses https://api.goatx402.io — confirm it's the GOAT mainnet host.
-  const BASE_URL = process.env.GOATX402_API_URL || 'https://x402-api.goat.network'; // GOAT mainnet
+  // GOAT mainnet API host. Renamed from x402-api.goat.network: that name still resolves,
+  // but the server now presents a cert for flow-api only, so Node aborts at TLS with
+  // ERR_TLS_CERT_ALTNAME_INVALID before any HTTP exchange (surfaces as a status-less
+  // "fetch failed"). Note flow-api = API; flow-merchant = portal UI. Not interchangeable.
+  const BASE_URL = process.env.GOATX402_API_URL || 'https://flow-api.goat.network';
   const MERCHANT_ID = process.env.GOATX402_MERCHANT_ID;
   const GOAT_CHAIN  = 2345;
   const USDC_E = '0x3022b87ac063DE95b1570F46f5e470F8B53112D8'; // GOAT USDC.e (verified). NOT Base USDC 0x833589fc...a02913

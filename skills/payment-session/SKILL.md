@@ -10,7 +10,8 @@
 - **Network:** GOAT mainnet, chain **2345**. Token: **USDC.e**
   (`0x3022b87ac063DE95b1570F46f5e470F8B53112D8`, 6 decimals).
 - **SDK:** `GoatX402Client({ baseUrl, apiKey, apiSecret })`. Base URL
-  `https://x402-api.goat.network`. Not `GoatX402` / `apiUrl` / `middleware()`.
+  `https://flow-api.goat.network` (the API — **not** `flow-merchant`, which is the portal
+  UI). Not `GoatX402` / `apiUrl` / `middleware()`.
 - **Two wallets:** payer (student, B) ≠ merchant (Aitch, A). Enforced in code.
 - **Spend cap:** low tier 0.1 USDC.e. At/above it, human confirmation is required.
 

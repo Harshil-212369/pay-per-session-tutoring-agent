@@ -35,7 +35,7 @@ money mover.
 
 ## 3. Mainnet host + explicit chain assertion
 
-**Decision.** Base URL is `https://x402-api.goat.network`; every script asserts chain
+**Decision.** Base URL is `https://flow-api.goat.network`; every script asserts chain
 `2345` before acting.
 
 **Why.** The SDK's example `api.goatx402.io` is a placeholder that fails. Separately, the

@@ -6,7 +6,7 @@ const orderId = process.argv[2];
 if (!orderId) { console.error("usage: node check-order.mjs <orderId>"); process.exit(1); }
 
 const client = new GoatX402Client({
-  baseUrl:   process.env.GOATX402_API_URL || "https://x402-api.goat.network",
+  baseUrl:   process.env.GOATX402_API_URL || "https://flow-api.goat.network",
   apiKey:    process.env.GOATX402_API_KEY,
   apiSecret: process.env.GOATX402_API_SECRET,
 });

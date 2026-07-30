@@ -124,7 +124,7 @@ sequenceDiagram
 
 **Correct SDK surface:** `new GoatX402Client({ baseUrl, apiKey, apiSecret })`. Not
 `GoatX402`, not `apiUrl`, not `merchantId`-in-config. Base URL is the mainnet host
-`https://x402-api.goat.network`.
+`https://flow-api.goat.network`.
 
 **Flow branches.** `createOrder` returns a `flow`. Only `ERC20_DIRECT` is auto-executed.
 `ERC20_3009` (gasless EIP-712) and `ERC20_APPROVE_XFER` **halt** rather than guess the

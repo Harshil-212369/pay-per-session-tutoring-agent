@@ -1,9 +1,21 @@
-// balance-check.mjs  —  run: node balance-check.mjs   (ethers v6)
+// balance-check.mjs  —  READ ONLY. No key required. Sends nothing.  (ethers v6)
+// usage: node balance-check.mjs [address]      env fallback: WALLET_ADDRESS
+//        defaults to wallet A (merchant/Aitch) so `npm run balance` is unchanged.
 import { ethers } from 'ethers';
 
 const RPC    = 'https://rpc.goat.network';
 const USDC_E = '0x3022b87ac063DE95b1570F46f5e470F8B53112D8';
-const WALLET = '0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF';
+const WALLET_A = '0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF'; // merchant / Aitch
+const WALLET = process.argv[2] || process.env.WALLET_ADDRESS || WALLET_A;
+
+if (!ethers.isAddress(WALLET)) {
+  console.error(`Not a valid address: ${WALLET}`);
+  process.exit(1);
+}
+
+// Echo the address so a run is self-documenting — you can never mistake which
+// wallet a given output describes.
+console.log(`Reading ${WALLET}${WALLET.toLowerCase() === WALLET_A.toLowerCase() ? '  (wallet A — merchant/Aitch)' : ''}`);
 
 const ERC20 = [
   'function balanceOf(address) view returns (uint256)',

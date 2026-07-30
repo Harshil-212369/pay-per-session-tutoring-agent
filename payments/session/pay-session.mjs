@@ -7,7 +7,7 @@ const MERCHANT_ID = process.env.GOATX402_MERCHANT_ID;
 const RPC        = "https://rpc.goat.network";
 const CHAIN      = 2345;
 const USDC       = "0x3022b87ac063DE95b1570F46f5e470F8B53112D8";
-const BASE_URL   = process.env.GOATX402_API_URL || "https://x402-api.goat.network";
+const BASE_URL   = process.env.GOATX402_API_URL || "https://flow-api.goat.network";
 const MERCHANT   = process.env.GOATX402_MERCHANT_ID;
 
 const AMOUNT_WEI     = "1000000";   // 1.0 USDC.e

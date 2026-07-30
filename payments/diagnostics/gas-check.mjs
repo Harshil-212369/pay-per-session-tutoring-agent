@@ -5,7 +5,13 @@ const RPC   = "https://rpc.goat.network";
 const CHAIN = 2345n;
 const USDC  = "0x3022b87ac063DE95b1570F46f5e470F8B53112D8";
 const A     = "0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF"; // Aitch / merchant
-const B     = process.env.STUDENT_ADDRESS || A;             // payer; falls back to A
+
+// B must be supplied and must differ from A. The previous `|| A` fallback made an
+// unset STUDENT_ADDRESS print A twice and read as a clean two-wallet pass — a
+// verification script that silently defaults is a false-green generator.
+const B = process.env.STUDENT_ADDRESS;
+if (!B) throw new Error("STUDENT_ADDRESS is not set — refusing to fall back to A and report one wallet as two");
+if (B.toLowerCase() === A.toLowerCase()) throw new Error(`STUDENT_ADDRESS equals A (${A}) — payer must differ from merchant`);
 
 const ERC20 = [
   "function transfer(address,uint256) returns (bool)",
