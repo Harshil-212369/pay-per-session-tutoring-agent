@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Segoe UI, Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#111834"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e01e37"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <radialGradient id="glowR" cx="0.15" cy="0.1" r="0.5">
+      <stop offset="0" stop-color="#e01e37" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#e01e37" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.9" cy="0.25" r="0.55">
+      <stop offset="0" stop-color="#1d4ed8" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#1d4ed8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowR)"/>
+  <rect width="1200" height="630" fill="url(#glowB)"/>
+  <rect x="0" y="0" width="1200" height="8" fill="url(#accent)"/>
+
+  <!-- logo mark -->
+  <g transform="translate(80,80)">
+    <rect width="64" height="64" rx="15" fill="#1d4ed8"/>
+    <rect width="32" height="64" rx="15" fill="#e01e37"/>
+    <text x="88" y="46" fill="#eef2ff" font-size="40" font-weight="700" letter-spacing="-1">Aitch</text>
+  </g>
+
+  <!-- live pill -->
+  <g transform="translate(80,190)">
+    <rect width="470" height="44" rx="22" fill="#141c3a" stroke="#26315e"/>
+    <circle cx="28" cy="22" r="6" fill="#e01e37"/>
+    <text x="48" y="29" fill="#aab4d4" font-size="19" font-family="ui-monospace, Consolas, monospace" letter-spacing="0.5">x402 LIVE · GOAT mainnet · chain 2345</text>
+  </g>
+
+  <!-- headline -->
+  <text x="80" y="330" fill="#eef2ff" font-size="72" font-weight="800" letter-spacing="-2">Your lecture, turned into</text>
+  <text x="80" y="410" fill="#eef2ff" font-size="72" font-weight="800" letter-spacing="-2">a study pack. <tspan fill="#93b4f7">Pay per session.</tspan></text>
+
+  <!-- subline -->
+  <text x="80" y="475" fill="#aab4d4" font-size="27">Autonomous AI tutoring agent · <tspan fill="#f4899a">no subscription</tspan> · pays in USDC.e</text>
+
+  <!-- footer proof strip -->
+  <g transform="translate(80,540)" font-size="21" fill="#7a86ad" font-family="ui-monospace, Consolas, monospace">
+    <text x="0" y="0">ERC-8004 Agent #77</text>
+    <text x="300" y="0" fill="#26315e">|</text>
+    <text x="330" y="0">OpenClaw</text>
+    <text x="500" y="0" fill="#26315e">|</text>
+    <text x="530" y="0">GOAT Network</text>
+  </g>
+</svg>

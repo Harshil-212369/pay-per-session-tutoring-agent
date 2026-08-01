@@ -34,14 +34,17 @@ venv/
 *.png
 *.jpg
 *.jpeg
+# ...except the site's social-preview card, which must ship
+!site/og.png
 
 # ── Runtime state (pending orders, spend ledger) ───────────────────
 state/
 **/state/
 
-# ── Internal working notes — not for the public repo ───────────────
+# ── Internal working notes / event docs — not for the public repo ──
 forClaudeCode/
 old/
+*.docx
 
 # ── OS / editor ────────────────────────────────────────────────────
 .DS_Store
