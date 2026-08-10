@@ -67,6 +67,38 @@ Three reports due Aug 21: Product Growth, Seed User Feedback (10–20 users), GE
    matters: **Agora pays Aitch** works today. Aitch buying compute makes it a *payer*, which
    needs a spending key — the thing we deliberately avoided.
 
+## ClawUp migration — in progress
+
+Target: move the agent off the laptop onto ClawUp. Required by the bootcamp, and it
+resolves the sandbox problem — `mode: off` with `exec`/`write` is alarming on a personal
+machine, far less so on hosted infrastructure.
+
+Path (per `docs.clawup.org/src/restore-and-migration`): build an OpenClaw backup archive,
+upload it with `upload_openclaw_import.sh` authenticated by the `clawup_token` browser
+cookie, then create a Claw with **Advanced → Restore Source = Restore From Uploaded
+Backup**. The ClawUp *public API* (`api.clawup.org/api/v1/`) is **not** part of migration —
+it is for talking to agents once deployed, and its OpenAI-compatible
+`/agents/{id}/chat` endpoint is the route to embedding Aitch on the website later.
+
+**Pre-archive assertion — run immediately before `tar`, every time:**
+
+```bash
+ls -la ~/.openclaw/openclaw.json*        # must return exactly ONE file
+ls ~/.openclaw/agents/main/sessions/     # no .reset. or .deleted. entries
+```
+
+This is not a formality. Superseded `openclaw.json` copies were vaulted on Aug 6; the
+daemon regenerated `.last-good` on Aug 9 unprompted. Every such copy carries the live
+Telegram bot token. An archive built before the re-check ships them all.
+
+**Cutover gotcha:** Telegram permits exactly one poller per bot token. When the ClawUp claw
+starts polling, the local WSL gateway competes for the same token and Telegram returns 409.
+Stop the local gateway at cutover, or create a second bot via BotFather for local dev.
+
+Superseded config copies and dead session transcripts are vaulted root-only outside the
+archive path. Live credentials — `credentials/telegram-pairing.json`,
+`identity/device-auth.json` — must stay put; migration needs them.
+
 ## Next milestone — payment → pipeline
 
 Make a paid session actually run end to end:
