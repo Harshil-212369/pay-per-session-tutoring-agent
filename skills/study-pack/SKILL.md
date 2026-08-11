@@ -1,3 +1,9 @@
+---
+name: study-pack
+description: Use when a student asks for tutoring, uploads lecture material (audio, slides, notes), asks who Aitch is or what a session costs, or wants a study pack for a course topic. Covers identity disclosure, pricing, and delivery of the finished pack.
+user-invocable: true
+---
+
 # SKILL: study-pack tutoring session
 
 > This is the OpenClaw skill that makes the agent *behave* as Aitch. It orchestrates the

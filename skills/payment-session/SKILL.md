@@ -1,3 +1,9 @@
+---
+name: payment-session
+description: Use when taking an x402 payment for a tutoring session on GOAT mainnet — creating an order, checking or explaining order status, or handling a confirmation timeout. Delegates all money movement to the deterministic engine; never inlines payment logic.
+user-invocable: true
+---
+
 # SKILL: x402 payment session
 
 > The payment half of a session. This skill defines how Aitch takes an x402 payment. All
