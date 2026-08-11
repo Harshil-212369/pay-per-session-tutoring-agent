@@ -59,9 +59,13 @@ agent call can't move funds on its own: it would need both the typed phrase and 
 **Decision.** Use separate payer (B / student) and merchant (A / Aitch) wallets. Scripts
 assert `payer != merchant` and that each private key derives its expected address.
 
-**Why.** A self-transfer (payer == merchant == agent) risks the x402 indexer not
-confirming cleanly. Two wallets give a clean confirmation and match the real product
-topology. This was confirmed against the bootcamp demo, which used a distinct receiver.
+**Why.** Two wallets match the real product topology — students pay the agent, so payer and
+payee are genuinely different parties — and they keep Aitch strictly payee-only, holding no
+spending key. The bootcamp demo also used a distinct receiver.
+
+(An earlier version of this file claimed a self-transfer "risks the x402 indexer not
+confirming cleanly." That was never tested and is not asserted here. The topology argument
+stands on its own.)
 
 **Rules out.** Self-payment as the primary demo path.
 
@@ -78,11 +82,30 @@ without freezing." A frozen-looking agent reads as broken even when the money mo
 **Evidenced by.** The live Stage-1 settlement: payer
 `0xBB086b3b05Cf958c16414A0Bdd9b43A53aDb7087` → merchant
 `0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF`, 1 USDC.e, `ERC20_DIRECT`, block 13802564,
-tx `0xe89e16dffd7713954b27b0b2e788af6700cea0c9e0346c787e8ec89672b6c7c5`. The indexer
-reconciliation lagged past the poll window; the on-chain transfer is irreversible and
-confirmed. The `catch` branch in `pay-session.mjs` handles exactly this: it reports the
-order status (e.g. `CHECKOUT_VERIFIED`) and tells the operator to reconcile rather than
-re-pay. **This is a documented latency characteristic, not a payment failure.**
+tx `0xe89e16dffd7713954b27b0b2e788af6700cea0c9e0346c787e8ec89672b6c7c5`.
+
+The `catch` branch did fire on that run, and it behaved correctly — reported the order
+status and told the operator to reconcile rather than re-pay. **But the original diagnosis
+of *why* it fired was wrong, and is corrected here.**
+
+It was recorded as indexer reconciliation lag. It was not. The order was created at
+`23:22:42.770Z`; the transfer did not mine until `23:28:26Z` — about **5m44s of manual
+operator time later** — and the platform then confirmed the payment at `23:28:31.389Z`,
+roughly **five seconds** after the transfer landed, comfortably inside the `23:42:42.770Z`
+expiry. The polling window had been opened at order creation and expired waiting on a
+transfer that had not been broadcast yet.
+
+**Root cause: the confirmation window was opened before the payment was sent.** The rail
+was not slow. The corrected rule is **broadcast first, poll second** — never open a
+confirmation window until the transaction is in the mempool. `pay-session.mjs` already
+sequences `createOrder → transfer → tx.wait() → waitForConfirmation`; the gap came from
+executing those steps manually.
+
+The decision above still stands: latency is real, timeouts must be explained rather than
+frozen on, and a second transfer must never be sent. Only the attributed cause changed.
+
+**Separately unresolved:** the order still reads `Invoiced` rather than
+`PAYMENT_CONFIRMED`. That is a distinct open question, not evidence of latency.
 
 ## 7. Flow allow-list — only `ERC20_DIRECT` auto-executes
 

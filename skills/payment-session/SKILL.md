@@ -51,7 +51,7 @@ node payments/session/pay-session.mjs --confirm
 | Engine outcome | Meaning | Agent action |
 |---|---|---|
 | `PAYMENT_CONFIRMED` / `INVOICED` + proof | Settled and proven | Unlock the session; deliver the study pack |
-| tx mined but confirmation pending / timeout | On-chain transfer done; indexer lagging | Tell the user it settled on-chain, reconciliation pending; **do not re-pay** |
+| tx mined but confirmation pending / timeout | On-chain transfer done; order state not yet advanced. **Do not attribute this to indexer lag** — measured confirmation was ~5s after the transfer mined. The usual cause is a poll window opened before the transfer was broadcast | Tell the user it settled on-chain and give them the tx hash; reconciliation pending; **do not re-pay** |
 | `EXPIRED` | Order window elapsed before transfer | Create a new order |
 | `flow != ERC20_DIRECT` | Unsupported flow | Halt; explain; do not guess signatures/approvals |
 | `payToAddress != AGENT_ADDRESS` | Wrong receiver | Halt; the merchant receiving address is misconfigured |

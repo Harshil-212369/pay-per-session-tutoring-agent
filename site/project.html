@@ -101,15 +101,18 @@ client.<span class="b">waitForConfirmation</span>(order.orderId)          <span 
 client.<span class="b">getOrderProof</span>(order.orderId)                <span class="c">// signed proof: from, to, tx_hash, flow</span>
       </div>
       <div class="grid g3" style="margin-top:20px;">
-        <div class="card"><div class="k">two-wallet model</div><p>Payer (student) ≠ merchant (Aitch), enforced in code. A self-transfer risks the indexer not confirming cleanly.</p></div>
+        <div class="card"><div class="k">two-wallet model</div><p>Payer (student) ≠ merchant (Aitch), enforced in code. Mirrors the real topology and keeps Aitch payee-only — it receives, and holds no spending key.</p></div>
         <div class="card"><div class="k">two-tier guardrail</div><p>Autonomous below the 0.1 USDC.e cap; explicit typed <span class="mono">CONFIRM PAYMENT</span> above it — plus a separate engine flag. Defense in depth.</p></div>
         <div class="card"><div class="k">latency handling</div><p>On timeout the engine surfaces order status and <span class="red">never sends a second transfer</span>. Latency is an expected branch, not a failure.</p></div>
       </div>
       <div class="callout" style="margin-top:20px;">
         <h3 style="margin-bottom:8px;">Live settlement — Stage 1</h3>
         <p style="margin:0;">A real payment has executed on GOAT mainnet: <span class="mono">1 USDC.e</span>, <span class="mono">ERC20_DIRECT</span>, block <span class="mono">13802564</span>,
-          payer <span class="mono">0xBB08…7087</span> → merchant <span class="mono">0x09eE…c6bF</span>. The indexer reconciliation lagged past the poll
-          window; the on-chain transfer is irreversible and confirmed. Documented honestly as a known latency characteristic — the engine's timeout branch handles exactly this.</p>
+          payer <span class="mono">0xBB08…7087</span> → merchant <span class="mono">0x09eE…c6bF</span>. The on-chain transfer is irreversible and confirmed.</p>
+        <p style="margin:12px 0 0;">The client stopped polling before that payment confirmed. I first wrote this up as indexer lag. It wasn&rsquo;t:
+          about <span class="mono">5m44s</span> of manual operator time passed between creating the order and broadcasting the transfer, and the poll window
+          had opened at order creation. Once the transfer landed, the platform confirmed it in roughly <span class="mono">5s</span>. The rail was fine; the
+          sequencing was mine. Rule that came out of it: <span class="red">broadcast first, poll second</span>.</p>
       </div>
     </div>
   </section>

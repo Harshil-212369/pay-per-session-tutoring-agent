@@ -98,7 +98,7 @@ not wired) · **DRAFT** (designed, not built).
 | Study-pack pipeline (CPOL507) | **DONE** | Runs as GitHub Actions in the private `cpol507-pipeline` repo |
 | Telegram `SKILL.md` session state machine | **OPEN** | Spine designed; disclosure + order handler wiring in progress |
 | `HEARTBEAT.md` (health + spend-cap reset) | **DRAFT** | Thin by design; off the payment path |
-| Indexer reconciliation latency handling | **OPEN** | Timeout branch works; polishing status-ping UX |
+| Order stuck at `Invoiced`, never `PAYMENT_CONFIRMED` | **OPEN** | Payment confirms on-chain; order state does not advance. Timeout branch itself works |
 | ERC-8004 Agent Card buyer-language rewrite (discovery) | **OPEN** | For agent-to-agent routing |
 | Seed-user pilot (Stage 2) | **OPEN** | Target 10–20 users; see docs/SEED_USERS.md |
 
@@ -115,13 +115,36 @@ A real settlement has executed on GOAT mainnet:
 | Block | 13802564 |
 | Tx | `0xe89e16dffd7713954b27b0b2e788af6700cea0c9e0346c787e8ec89672b6c7c5` |
 
-**Known latency characteristic (not a failure).** On this settlement, the x402 order's
-indexer reconciliation lagged past the client poll window. The **on-chain transfer is
-irreversible and confirmed** — the value moved. This is an indexer/reconciliation lag,
-handled explicitly by the engine's timeout branch: it never sends a second transfer, it
-surfaces the current order status, and it directs reconciliation to the portal. See the
-`catch` branch in [`payments/session/pay-session.mjs`](payments/session/pay-session.mjs)
-and [`docs/ENGINEERING_DECISIONS.md`](docs/ENGINEERING_DECISIONS.md).
+**What actually happened on this settlement.** The client stopped polling before the
+payment confirmed. The cause was **operator delay, not indexer lag**:
+
+| Event | Time (UTC) |
+|---|---|
+| Order created | `23:22:42.770` |
+| Transfer mined (block 13802564) | `23:28:26` |
+| Payment recorded confirmed | `23:28:31.389` |
+| Order expiry | `23:42:42.770` |
+
+Roughly **5m44s of manual operator time** elapsed between creating the order and
+broadcasting the transfer. The polling window had opened at order creation, so it ran out
+waiting on money that had not been sent yet. Once the transfer did land, the platform
+confirmed it in **about five seconds** — there was no meaningful reconciliation lag, and
+the payment confirmed well inside the 20-minute expiry.
+
+The **on-chain transfer is irreversible and confirmed** — the value moved. The engine's
+timeout branch behaved correctly: it never sent a second transfer, surfaced the order
+status, and directed reconciliation to the portal. See the `catch` branch in
+[`payments/session/pay-session.mjs`](payments/session/pay-session.mjs).
+
+The operational rule that follows: **broadcast first, poll second.** Do not open a
+confirmation window before the transaction is in the mempool.
+[`pay-session.mjs`](payments/session/pay-session.mjs) already orders it this way — the
+delay above came from running the steps by hand.
+
+**Still open:** the order continues to display as `Invoiced` rather than
+`PAYMENT_CONFIRMED`, so the merchant dashboard reads "Payment confirmed: 0" despite a
+confirmed payment record and a real transaction. That is unexplained and is tracked in
+`HANDOFF.md`; it is not the same thing as the timeout described above.
 
 ## Quickstart
 

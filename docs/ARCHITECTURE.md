@@ -134,10 +134,15 @@ merchant is `DIRECT`.
 **Decimals fail-safe.** USDC.e is assumed 6 decimals at quote time; the engine reads
 `decimals()` on-chain and aborts on mismatch rather than send a wrong amount.
 
-**Latency / reconciliation.** After the transfer mines, the indexer may lag past the poll
-window. The transfer is already irreversible; the engine surfaces the order's current
-status, **never sends a second transfer**, and points reconciliation to the portal. This
-is the behaviour exercised by the live Stage-1 settlement documented in the README.
+**Timeout / reconciliation.** If the confirmation poll expires, the transfer may already be
+irreversible, so the engine surfaces the order's current status, **never sends a second
+transfer**, and points reconciliation to the portal.
+
+The live Stage-1 settlement exercised this branch, but not for the reason first recorded.
+It was attributed to indexer lag; the measured cause was **~5m44s of manual operator time
+between order creation and broadcasting the transfer**, with the poll window opened at
+creation. The platform confirmed the payment ~5s after the transfer mined. Ordering rule:
+**broadcast first, poll second.** See `docs/ENGINEERING_DECISIONS.md` §6.
 
 ## 4. ERC-8004 identity
 
@@ -158,10 +163,10 @@ Payer and receiver are **two distinct wallets** by design:
 - **A — merchant / Aitch** (`AGENT_ADDRESS`): receives USDC.e.
 - **B — student / payer** (`STUDENT_ADDRESS`): sends USDC.e.
 
-Rationale: a self-transfer (payer == merchant == agent) risks the indexer not confirming
-cleanly. Distinct wallets give a clean confirmation and mirror the real product topology
-(students pay the agent). Scripts assert `payer != merchant` and that each private key
-derives its expected address before doing anything.
+Rationale: distinct wallets mirror the real product topology (students pay the agent) and
+keep Aitch payee-only — it receives and holds no spending key. Scripts assert
+`payer != merchant` and that each private key derives its expected address before doing
+anything.
 
 - [`payments/funding/fund-student.mjs`](../payments/funding/fund-student.mjs) — merchant A
   bootstraps payer B with gas + USDC.e.
