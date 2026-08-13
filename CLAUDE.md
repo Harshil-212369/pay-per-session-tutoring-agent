@@ -19,17 +19,27 @@ Do not report project status from this repo alone. Two separate reviews have pro
 confidently wrong status by reconstructing it from git logs in this tree while the real
 state was in WSL.
 
-## Verify before editing a context file
+## Rule: no change is done until the runtime proves it
 
-Before editing any file that is supposed to change an agent's behaviour, confirm the agent
-actually loads it.
+This project's most-repeated failure (3 times): a file edited in good faith that the
+runtime never reads. `IDENTITY.md` (not in OpenClaw's startup context — that's
+`AGENTS.md`/`SOUL.md`/`USER.md`), `goat-agent` (in `.claude/skills/`, which OpenClaw never
+scans), `study-pack`/`payment-session` (installer printed success; no YAML frontmatter, so
+never indexed).
 
-Concrete case: `IDENTITY.md` was rewritten to fix the bot describing itself as a generic
-assistant with no wallet. Nothing changed — because `AGENTS.md` lists the runtime startup
-context as `AGENTS.md`, `SOUL.md`, `USER.md`, and instructs the agent *not* to reread other
-startup files. `IDENTITY.md` was never in the load path. The fix had to go into `SOUL.md`.
+Therefore, after any change intended to alter behaviour:
 
-A file existing is not evidence it is read.
+1. **Run the check that observes the runtime, not the filesystem**, and show its output:
+   - skills → `openclaw skills check` ("Ready and visible to model") — not the installer message
+   - agent context → `/new` in Telegram, then ask the bot
+   - payment/API → run the relevant read-only diagnostic
+2. **Do not start the next task until the check passes.** An unverified change becomes
+   accepted history and later work silently builds on it.
+3. Commits are not on GitHub until pushed — `git log origin/main..HEAD` must be empty at
+   session end.
+
+When creating or significantly editing a file, **show the user the actual content or
+diff** — they read code more reliably than prose summaries.
 
 ## Chain and token constants — get these wrong and money moves incorrectly
 

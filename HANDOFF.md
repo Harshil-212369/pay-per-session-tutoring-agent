@@ -6,12 +6,18 @@ Open state for Aitch. Update at the end of every session. Read at the start of e
 
 ## Deadlines
 
-| What | When | Days left |
+| What | When | Days left (from Aug 13) |
 |---|---|---|
 | #ClawToTheTop challenge | Aug 10 – Aug 21 | **running now** |
-| Metis livestream (demo slot = 25 pts) | Aug 12 | 2 |
-| Stage 2 deliverables (3 reports) | **Aug 21** | **11** |
-| Demo Day | Aug 26 | 16 |
+| ~~Metis livestream Aug 12~~ | **postponed** — only Sage (sagepays.xyz) made the marketing livestream | — |
+| **Demo ready (self-imposed, before the 19th)** | **Aug 19** | **6** |
+| Stage 2 deliverables (3 reports) | **Aug 21** | **8** |
+| Demo Day | Aug 26 | 13 |
+
+Competitive note: Sage (@sagedeputybot, Shariq — the same Shariq waiting on our allowlist)
+pays testers in USDC on GOAT mainnet with on-chain receipts, has a live web app and a demo
+video, and took the livestream slot. Both waiting allowlist users build competing agents —
+treat what they see of Aitch accordingly.
 
 #ClawToTheTop scoring: 5 posts/week = 10 pts, each extra post +5, each verified active
 user +5, featured livestream demo +25. Evidence must be posted in the cohort group chat.
