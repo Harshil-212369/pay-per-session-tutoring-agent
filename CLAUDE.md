@@ -41,6 +41,17 @@ Therefore, after any change intended to alter behaviour:
 When creating or significantly editing a file, **show the user the actual content or
 diff** — they read code more reliably than prose summaries.
 
+## Two skill directories, two different readers
+
+| Directory | Read by | Requires |
+|---|---|---|
+| `workspace/skills/` | **OpenClaw / Aitch** | YAML frontmatter (`name:`, `description:`) or it is not indexed |
+| `workspace/.claude/skills/` | **Claude Code only** | nothing — Aitch never scans it |
+
+`goat-agent` lives in `.claude/skills/` and is **reference material only**; it carries a
+banner saying so. Editing chain IDs or token addresses there changes nothing about the
+running agent — Aitch's constants come from `SOUL.md`.
+
 ## Chain and token constants — get these wrong and money moves incorrectly
 
 | Key | Value |
