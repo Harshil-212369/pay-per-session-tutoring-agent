@@ -1,7 +1,8 @@
 // gas-check.mjs — READ ONLY. No key required. Sends nothing.
 import { ethers } from "ethers";
+import { assertRpcFresh, RPC_URL } from "../lib/rpc-freshness.mjs";
 
-const RPC   = "https://rpc.goat.network";
+const RPC   = RPC_URL;
 const CHAIN = 2345n;
 const USDC  = "0x3022b87ac063DE95b1570F46f5e470F8B53112D8";
 const A     = "0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF"; // Aitch / merchant
@@ -19,6 +20,7 @@ const ERC20 = [
 ];
 
 const provider = new ethers.JsonRpcProvider(RPC, Number(CHAIN));
+await assertRpcFresh(provider);  // refuse stale state before reading balances
 const usdc     = new ethers.Contract(USDC, ERC20, provider);
 
 const net = await provider.getNetwork();

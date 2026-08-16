@@ -1,10 +1,11 @@
 // pay-session.mjs — Aitch x402 session payment. B (student) pays A (Aitch/merchant).
 // Dry-run by default. Real funds move only with --confirm.
 import { ethers } from "ethers";
+import { assertRpcFresh, RPC_URL } from "../lib/rpc-freshness.mjs";
 import { GoatX402Client } from "goatx402-sdk-server";
 import readline from "node:readline/promises";
 const MERCHANT_ID = process.env.GOATX402_MERCHANT_ID;
-const RPC        = "https://rpc.goat.network";
+const RPC   = RPC_URL;
 const CHAIN      = 2345;
 const USDC       = "0x3022b87ac063DE95b1570F46f5e470F8B53112D8";
 const BASE_URL   = process.env.GOATX402_API_URL || "https://flow-api.goat.network";
@@ -29,6 +30,7 @@ for (const [k, v] of Object.entries({ STUDENT_PRIVATE_KEY: KEY_B, STUDENT_ADDRES
   if (!v) throw new Error(`Missing env: ${k}`);
 
 const provider = new ethers.JsonRpcProvider(RPC, CHAIN);
+await assertRpcFresh(provider);  // refuse stale state before reading balances
 const walletB  = new ethers.Wallet(KEY_B, provider);
 const usdc     = new ethers.Contract(USDC, ERC20, walletB);
 

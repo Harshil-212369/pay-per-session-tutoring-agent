@@ -2,8 +2,9 @@
 // usage: node balance-check.mjs [address]      env fallback: WALLET_ADDRESS
 //        defaults to wallet A (merchant/Aitch) so `npm run balance` is unchanged.
 import { ethers } from 'ethers';
+import { assertRpcFresh, RPC_URL } from '../lib/rpc-freshness.mjs';
 
-const RPC    = 'https://rpc.goat.network';
+const RPC    = RPC_URL;
 const USDC_E = '0x3022b87ac063DE95b1570F46f5e470F8B53112D8';
 const WALLET_A = '0x09eE632927821d7B18Ac76Ff743821A30DA7c6bF'; // merchant / Aitch
 const WALLET = process.argv[2] || process.env.WALLET_ADDRESS || WALLET_A;
@@ -27,6 +28,10 @@ const provider = new ethers.JsonRpcProvider(RPC);
 const token = new ethers.Contract(USDC_E, ERC20, provider);
 
 try {
+  // A stale node reports old balances as if they were current. Fail loudly instead.
+  const { blockNumber, ageSeconds } = await assertRpcFresh(provider);
+  console.log(`RPC head block ${blockNumber} (${ageSeconds}s old) ✓`);
+
   // Native BTC gas — required to actually SEND a payment, not just hold tokens.
   const gasRaw = await provider.getBalance(WALLET);
   console.log(`Gas  (BTC): ${ethers.formatEther(gasRaw)}  (raw=${gasRaw})`);
