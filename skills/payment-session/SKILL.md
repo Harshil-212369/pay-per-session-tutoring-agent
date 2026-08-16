@@ -39,18 +39,33 @@ getOrderProof(orderId)                        (signed proof: from, to, tx_hash, 
 
 Deterministic, shell-out only. The agent never constructs a transaction.
 
-```bash
-# Preflight (read-only, no keys move funds):
-node payments/diagnostics/merchant-check.mjs      # merchant listed + USDC.e ready?
-node payments/diagnostics/gas-check.mjs           # can the payer afford the txs?
+Use **absolute paths**. Relative paths resolve against the agent's working directory,
+not the repo, and silently fail. Pin the interpreter too — `node` is not on PATH in
+non-interactive shells here.
 
-# Dry run (creates an order, sends nothing):
-node payments/session/pay-session.mjs
+```bash
+NODE=/home/harry/.nvm/versions/node/v22.22.3/bin/node
+REPO=/home/harry/.openclaw/workspace/aitch-repo
+
+# Preflight (read-only, moves nothing, needs no keys):
+$NODE $REPO/payments/diagnostics/merchant-check.mjs   # merchant listed + USDC.e ready?
+STUDENT_ADDRESS=0x<payer> $NODE $REPO/payments/diagnostics/gas-check.mjs
+
+# Issue an invoice for an EXTERNAL payer (agent-to-agent). No key needed —
+# the buyer signs on their side. Prints orderId + payToAddress:
+$NODE $REPO/payments/session/create-order.mjs 0x<payer address>
+
+# Dry run of the full self-pay path (creates an order, sends nothing):
+$NODE $REPO/payments/session/pay-session.mjs
 
 # Execute (moves 1 USDC.e). Requires --confirm; above cap also prompts for
 # the typed phrase CONFIRM PAYMENT:
-node payments/session/pay-session.mjs --confirm
+$NODE $REPO/payments/session/pay-session.mjs --confirm
 ```
+
+`pay-session.mjs` requires `STUDENT_PRIVATE_KEY` because it signs the transfer itself —
+use it only when Aitch's own payer wallet is paying. When someone else pays, use
+`create-order.mjs`, which needs no key at all.
 
 ## Result interpretation
 
