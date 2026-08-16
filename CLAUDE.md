@@ -2,6 +2,11 @@
 
 # Aitch — working notes
 
+**Two CLAUDE.md files exist.** This one (Windows repo, in git) loads for Claude Code
+sessions started from the repo. `~/.openclaw/workspace/CLAUDE.md` (WSL, not in this git)
+loads for sessions started inside the workspace. When told "update CLAUDE.md", confirm
+which one — project rules belong here; live-runtime/agent facts belong in the WSL one.
+
 Pay-per-session AI tutoring agent. ERC-8004 Agent #77 on GOAT Network mainnet, paid in
 USDC.e over x402.
 

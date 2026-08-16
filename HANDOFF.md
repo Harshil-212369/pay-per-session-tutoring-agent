@@ -59,10 +59,30 @@ Three reports due Aug 21: Product Growth, Seed User Feedback (10–20 users), GE
 ## Open
 
 1. **Telegram allowlist** — `channels.telegram.allowFrom: ["8014413141"]`. Two people have
-   sent `/start` and are waiting: `8737323083` (@zakariyahakbar), `2105571539` (@shariqshkt).
-   **Blocked on:** `openclaw sandbox explain` reports `mode: off`, `runtime: direct`, with
-   `exec/process/write` allowed. Admitting an outsider today gives them a shell-capable
-   agent on the laptop. Turn the sandbox on before admitting anyone.
+   sent `/start` and are waiting: `8737323083` (@zakariyahakbar — **builds Agora, competitor**),
+   `2105571539` (@shariqshkt — **builds Sage, competitor**). Plan: friend first, then them.
+
+   Sandbox status (Aug 16): `mode: non-main` + `workspaceAccess: none` are **set and
+   gateway-restarted**. Policy verified via
+   `openclaw sandbox explain --session agent:main:telegram:dm:9999999` → `runtime: sandboxed`.
+   (Bare `sandbox explain` inspects the main session, which non-main excludes — it reads
+   `runtime: direct` forever and is NOT a valid completion test.)
+
+   **Still blocked on the sandbox image.** OpenClaw fails fast until
+   `openclaw-sandbox:bookworm-slim` is built manually; the build fails in WSL because
+   `~/.docker/config.json` has `credsStore: "desktop"` (a Windows .exe Linux can't exec) —
+   remove that key, rebuild, then a Telegram message + `openclaw sandbox list` showing a
+   container row is the real completion proof.
+
+   ⚠️ Until the image exists, the owner's own Telegram DM (`agent:main:teleg…413141` — a
+   non-main key) also gets sandboxed and **fails fast**. If the bot goes dark, either build
+   the image or temporarily `mode off` + gateway restart.
+
+   Payment architecture for the pilot: **operator-run only.** The agent holds no payment
+   tool and no creds; you run `create-order.mjs` on the host. A sandboxed session cannot
+   reach a host loopback service anyway (default `network: "none"`, and container loopback
+   never reaches the Gateway host), so any agent-invoked payment call is post-bootcamp work
+   in the channel layer, not now.
 2. **No WSL clone of this repo.** `~/aitch` does not exist. Payment code is Windows-only, so
    Aitch cannot execute it. `SOUL.md` Rule 2 forbids execution outside the workspace, so the
    code must land *inside* `~/.openclaw/workspace/`, not at `~/aitch`.
