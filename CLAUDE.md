@@ -107,3 +107,26 @@ test something.
 A fallback default inside a verification script is a false-green generator — `gas-check.mjs`
 once had `STUDENT_ADDRESS || A`, which printed one wallet twice and read as a clean
 two-wallet pass. Verification scripts should throw, not default.
+
+## Never trust a data source's freshness — measure it
+
+`rpc.goat.network` served a head block **43 hours old** while the chain moved on. It did
+not error. `eth_blockNumber`, `eth_call`, and `eth_getLogs` all answered cheerfully with
+old truth. `balance-check.mjs` reported wallet A at 4.0 USDC.e when it held 6.0, and a log
+scan found *zero* incoming transfers that had provably landed — the blocks containing them
+did not exist on that node. Two real payments were nearly reported to the counterparty as
+never sent.
+
+**Before reporting any on-chain state, assert freshness** — `payments/lib/rpc-freshness.mjs`
+compares the head block timestamp to the local clock and throws with the measured lag.
+It is wired into `balance-check`, `gas-check`, and `pay-session`. Override a sick node with
+`GOAT_RPC_URL`.
+
+Generalise beyond RPC: **a source that answers is not a source that is current.** Any
+cache, index, mirror, or replica can serve stale data without erroring. If a reading
+contradicts a more authoritative source (a block explorer, the merchant portal, a
+counterparty's own records), suspect the reader before disputing the other party.
+
+Corollary for disagreements: when someone says money moved and a script says it did not,
+**the burden is on the script.** Do not tell a counterparty their payment failed on the
+word of a single endpoint.
