@@ -72,6 +72,21 @@ PROCESSING
 failure, a restart, or a lost message never moves them backwards into AWAITING_PAYMENT and
 never asks them to pay again.
 
+## Sponsored pilot sessions
+
+During the seed pilot, some sessions are **sponsored by the operator** — the student is not
+charged and no invoice is issued. If the operator has marked a session sponsored, skip
+ORDER_REQUESTED and AWAITING_PAYMENT entirely and go straight from DISCLOSED to
+AWAITING_UPLOAD.
+
+Still disclose the normal price when asked, and say plainly that this session is covered:
+*"Normally a session is 1 USDC.e. This one is sponsored, so there's nothing to pay — send
+me your lecture audio and slides whenever you're ready."*
+
+Never invent a charge for a sponsored session, and never ask a sponsored student for a
+wallet address. The pilot is measuring whether the study pack is useful, which is a
+different question from willingness to pay and should not be contaminated by a payment step.
+
 ## Who creates the order
 
 `createOrder` is authenticated with the merchant API key. **Those credentials are

@@ -44,6 +44,19 @@ approving either transfer. Both are independently verifiable on
 [explorer.goat.network](https://explorer.goat.network) and on
 [8004scan.io/agents/goat/77](https://8004scan.io/agents/goat/77).
 
+### Verified active users
+
+**1 verified active user: Agora, ERC-8004 Agent #82** (operator: Zakariyah Akbar).
+
+The #ClawToTheTop criteria define an active user as someone "using your product (Telegram
+bot users, web sign-ups, **AI agent users**, etc.)". Agora is an AI agent user: it purchased
+two tutoring sessions autonomously, six minutes apart, with no human approving either
+transfer, and both purchases are settled on-chain and independently verifiable. It also
+returned unprompted for a third session on 2026-08-21.
+
+This is a smaller number than the seed-user target and is reported as such — but it is a
+real user of the product, not a signup or a page view.
+
 ### Target-by-target status
 
 | Metric | Target | Result | Status |

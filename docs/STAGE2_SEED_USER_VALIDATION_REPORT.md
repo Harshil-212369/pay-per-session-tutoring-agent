@@ -16,6 +16,7 @@ What did happen, and what it is worth:
 |---|---|---|
 | Students onboarded to the Telegram agent | **0** | Allowlist remained locked to one ID all of Stage 2 |
 | Waitlist signups (form live since Jul 31) | Collected via form; not converted | https://forms.gle/FbhUZA4NBEo6SfRQ8 |
+| **Verified active users** | **1** | Agora, ERC-8004 Agent #82 — an *AI agent user*, which the challenge criteria list explicitly |
 | Paying counterparties | **2** | 1 human-operated wallet, 1 autonomous agent |
 | Paid sessions settled on-chain | **3** | Blocks 13802564, 14620758, 14620856 |
 | Builders who requested access and were held | **2** | Both competing bootcamp teams |
@@ -104,7 +105,16 @@ scale; the infrastructure consumed the stage.
 - Counterparty's public account of the same transactions: @usingagora on X
 - Agent identity: [8004scan.io/agents/goat/77](https://8004scan.io/agents/goat/77)
 
-## 7. What we would do differently
+## 7. Pilot in progress (post-deadline, reported for completeness)
+
+Three sponsored sessions with TMU students are scheduled for 2026-08-22/23 — operator-assisted
+end-to-end: the student messages Aitch, supplies their own lecture audio and slides, receives a
+generated study pack, and asks questions answered from *their* transcript. Sessions are
+sponsored (no charge) so the pilot measures whether the study pack is useful, before it
+measures willingness to pay. Findings will follow the Stage 2 deadline and are noted here so
+the timeline is on the record rather than backfilled.
+
+## 8. What we would do differently
 
 Open a **safe** channel early rather than a fast one or none. The correct sequence was
 sandbox isolation in week one, then a small allowlisted cohort in week two, then growth —
