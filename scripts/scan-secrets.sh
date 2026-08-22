@@ -13,9 +13,15 @@ cd "$ROOT" || exit 2
 # Directories we never scan (deps, internal notes, git internals).
 EXCLUDES=(--glob '!node_modules/**' --glob '!.git/**' --glob '!forClaudeCode/**' --glob '!old/**')
 
-# Known PUBLIC 64-hex values that are allowed to appear (documented on-chain data).
-# The Stage-1 settlement tx hash is public and intentionally documented.
-ALLOWLIST='e89e16dffd7713954b27b0b2e788af6700cea0c9e0346c787e8ec89672b6c7c5'
+# Known PUBLIC 64-hex values allowed to appear (documented on-chain data).
+# Settlement tx hashes are public by construction — they are printed on a block explorer
+# and are the evidence the Stage 2 reports cite. A private key is NEVER added here.
+# Only add a hash after confirming it resolves on https://explorer.goat.network.
+ALLOWLIST_HASHES=(
+  'e89e16dffd7713954b27b0b2e788af6700cea0c9e0346c787e8ec89672b6c7c5'  # blk 13802564, human wallet -> Aitch
+  'f972de0eb556f0836821490024196c1313e9edf9cebaa167e584063d32fb468b'  # blk 14620758, Agora #82 -> Aitch #77
+  'a81799f4a3a376384c955d8cecd819ab2ea4feda567588f9ff5f0eff1b2d48ce'  # blk 14620856, Agora #82 -> Aitch #77
+)
 
 PATTERN='0x[0-9a-fA-F]{64}'
 
@@ -30,7 +36,11 @@ else
 fi
 
 # Drop allowlisted public hashes.
-FILTERED="$(printf '%s\n' "$HITS" | grep -v "$ALLOWLIST" || true)"
+FILTERED="$HITS"
+for h in "${ALLOWLIST_HASHES[@]}"; do
+  FILTERED="$(printf '%s
+' "$FILTERED" | grep -v "$h" || true)"
+done
 
 if [ -n "${FILTERED//[$'\t\r\n ']/}" ]; then
   echo
@@ -43,5 +53,5 @@ if [ -n "${FILTERED//[$'\t\r\n ']/}" ]; then
 fi
 
 echo "OK — no unallowlisted 64-hex secrets found."
-echo "(Public settlement tx hash is allowlisted and expected in docs.)"
+echo "(${#ALLOWLIST_HASHES[@]} public settlement tx hashes allowlisted; expected in docs.)"
 exit 0
